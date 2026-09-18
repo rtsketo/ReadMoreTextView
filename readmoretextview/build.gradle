@@ -1,33 +1,60 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'bravoborja'
-    groupId = 'com.borjabravo'
-    uploadName = 'ReadMoreTextView'
-    artifactId = 'readmoretextview'
-    publishVersion = '2.1.0'
-    desc = 'A Custom TextView with trim text'
-    website = 'https://github.com/bravoborja/ReadMoreTextView'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
 }
 
+group = 'com.borjabravo'
+version = '2.2.0-androidx'
+
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.0'
+    namespace 'com.borjabravo.readmoretextview'
+    compileSdk 35
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdk 14
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
-    lintOptions {
-        abortOnError false
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
 dependencies {
-    implementation 'com.android.support:support-compat:27.0.0'
-    testImplementation 'junit:junit:4.12'
+    // These versions preserve the original API 14 minimum while removing legacy support libraries.
+    implementation 'androidx.core:core:1.6.0'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.borjabravo'
+            artifactId = 'readmoretextview'
+            version = project.version
+
+            afterEvaluate {
+                from components.release
+            }
+
+            pom {
+                name = 'ReadMoreTextView'
+                description = 'A custom TextView with trim text'
+                url = 'https://github.com/rtsketo/ReadMoreTextView'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+            }
+        }
+    }
 }
